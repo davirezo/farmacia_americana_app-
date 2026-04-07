@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:farmacia_app/app/app_routes.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
@@ -20,12 +21,27 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> login() async {
-    final email = emailController.text;
+  Future<void> login(BuildContext context) async {
+    final email = emailController.text.trim().toLowerCase();
     final password = passwordController.text;
-    
-    // Variável utilizada para evitar Warnings de POO
-    debugPrint("Tentativa de login - Usuário: $email | Senha: $password");
+
+    const corporateDomains = [
+      '@farmaciaamericana.com.br',
+      '@drogariaamericana.com.br',
+    ];
+
+    final isCorporateEmail = corporateDomains.any(email.endsWith);
+
+    if (isCorporateEmail) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.attendantAdmin);
+      }
+      debugPrint("Login atendente detectado: $email");
+      return;
+    }
+
+    // Fluxo padrão (cliente) - ainda como esqueleto
+    debugPrint("Tentativa de login cliente - Usuário: $email | Senha: $password");
   }
 
   @override
